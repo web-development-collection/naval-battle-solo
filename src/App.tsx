@@ -68,7 +68,7 @@ class App extends Component<any, any> {
       />
 
       <button
-        className={"Play Button" + ` ${this.state.playing && "Playing"}`}
+        className={`Play Button ${this.state.playing && "Playing"}`}
         onClick={() => {
           if (this.state.playing)
             return;
