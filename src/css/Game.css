@@ -1,0 +1,130 @@
+
+.Select {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 8px;
+
+    width: fit-content;
+
+    margin: 80px auto 20px;
+
+    background-color: #f3f3f3;
+    padding: 6px;
+    border-radius: 4px;
+}
+
+
+.Firework {
+    position: absolute;
+    /*// border: "2px solid red";*/
+    width: 600px;
+    height: 100%;
+    object-fit: contain;
+    top: -110px;
+    bottom: 0;
+}
+
+.Firework.Right {
+    right: 0;
+}
+
+
+.Play.Button {
+    padding: 8px 24px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+
+    cursor: pointer;
+
+    background-color: dodgerblue;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 16px;
+
+    display: grid;
+
+    margin: 20px auto 0;
+}
+
+.Play.Button.Playing {
+    background-color: #f3f3f3;
+    color: #3e3e3e;
+}
+
+
+.Board {
+    width: fit-content;
+    margin: 0 auto;
+
+    display: grid;
+    grid-gap: 2px;
+}
+
+
+.Tile {
+    --size: 40px;
+
+    width: var(--size);
+    height: var(--size);
+    border-radius: 4px;
+}
+
+.Number.Tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #f1f1f1;
+    font-weight: 600;
+}
+
+.Water.Tile {
+    background-color: #d8ecff;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.Water.Tile .Wave {
+    line-height: 40px;
+    font-size: 18px;
+
+    color: dodgerblue;
+}
+
+.Water.Tile .Wave.Lock {
+    color: #00468f;
+}
+
+
+.Water.Tile .Boat {
+    --size: 30px;
+
+    width: var(--size);
+    height: var(--size);
+    border-radius: 4px;
+
+    background-color: #f3f320;
+}
+
+.Water.Tile .Boat.Lock {
+    background-color: orange;
+}
+
+
+.Water.Tile.SelectBox {
+    background-color: #fff;
+
+    transition: .2s ease all;
+}
+
+.Water.Tile.SelectBox.Selected {
+    /*background-color: #cccccc;*/
+    box-shadow: -1px 7px 16px -5px rgba(0,0,0,0.4);
+    -webkit-box-shadow: -1px 7px 16px -5px rgba(0,0,0,0.4);
+    -moz-box-shadow: -1px 7px 16px -5px rgba(0,0,0,0.4);
+}
