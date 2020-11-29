@@ -1,19 +1,53 @@
 import React, {Component, CSSProperties} from 'react';
 import Tile from "./Tile";
 import NumberTile from "./NumberTile";
+import {Item} from "./Game";
 
 
+// Constants
 const size = 10;
 const sizeSquared = size * size;
 const boatLengths = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
 const show = [5 /* waves */, 4 /* boats */];
 
 
-class Board extends Component<any, any> {
+/**
+ * interface Props
+ */
+interface Props {
+  type: Item;
+  playing: boolean;
+  onWin: () => void;
+
+  resetToggle: boolean;
+  clearToggle: boolean;
+  tipToggle: boolean;
+}
+
+
+/**
+ * interface State
+ */
+interface State {
+  visibleBoard: Array<any>,
+  originalVisibleBoard: Array<any>,
+
+  board: Array<any>,
+  bottomRow: Array<any>,
+  rightCol: Array<any>,
+}
+
+
+/**
+ * component Board
+ * @author Ingo Andelhofs
+ */
+class Board extends Component<Props, State> {
 
   // State
-  public state: any = {
+  public state: State = {
     visibleBoard: [],
+    originalVisibleBoard: [],
     board: [],
 
     bottomRow: [],
@@ -21,7 +55,113 @@ class Board extends Component<any, any> {
   };
 
 
+  // Listeners
+  public onTileClick = (index: number) => {
+    if (!this.props.playing)
+      return;
+
+    const updatedVisibleBoard = this.state.visibleBoard.map((e: any, i: number) => {
+      if (i === index) {
+        return {
+          ...e,
+          type: this.props.type,
+        }
+      }
+
+      return e;
+    });
+
+    this.setState(() => ({visibleBoard: updatedVisibleBoard}));
+
+    if (this.isGameValid(updatedVisibleBoard)) {
+      this.props.onWin();
+      return;
+    }
+  }
+
+
+  // Actions
+  public onTip = () => {
+    const indexes = this.getEmptyVisibleBoardIndexes();
+    const length = indexes.length;
+    const randomPosition = Math.floor(Math.random() * length);
+    const randomIndex = indexes[randomPosition];
+
+    // Fill index on visible board
+    const updatedVisibleBoard = this.state.visibleBoard.map((e: any, i: number) => {
+      if (i === randomIndex) {
+        return {
+          ...this.state.board[randomIndex],
+          locked: true,
+        };
+      }
+
+      return e;
+    });
+
+    this.setState(() => ({visibleBoard: updatedVisibleBoard}));
+
+    if (this.isGameValid(updatedVisibleBoard)) {
+      this.props.onWin();
+      return;
+    }
+  }
+
+  public onReset = () => {
+    this.initBoard();
+  }
+
+  public onClear = () => {
+    this.setState((s: State) => ({visibleBoard: s.originalVisibleBoard}));
+  }
+
+
+
   // Generators
+  public generateVisibleBoard(board: Array<any>) {
+    const boats = this.getRandomBoats(board);
+    const waves = this.getRandomWaves(board);
+
+    const generatedBoard = Array.from({length: sizeSquared}, () => ({
+      type: "Empty",
+      locked: false,
+    }));
+
+    boats.forEach((item: any) => {
+      generatedBoard[item.index] = {
+        ...item,
+        type: "Boat",
+        locked: true,
+      };
+    });
+
+    waves.forEach(({index}: any) => {
+      generatedBoard[index] = {
+        type: "Wave",
+        locked: true,
+      };
+    });
+
+    return generatedBoard;
+  }
+
+  public isGameValid(visibleBoard: Array<any>): boolean {
+
+    const board = this.state.board;
+
+    for (let i = 0; i < sizeSquared; i++) {
+
+      const boardElement = board[i];
+      const visibleBoardElement = visibleBoard[i];
+
+      if (boardElement?.type !== visibleBoardElement?.type) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   public generateBoats() {
     let board = Array.from({length: sizeSquared}, () => ({}));
 
@@ -38,7 +178,6 @@ class Board extends Component<any, any> {
       let i = 0;
       const retries = 50;
       while (!this.canPlaceBoat(direction, startLengthIndex, startWidthIndex, boatLength, board) && i < retries) {
-        console.log("RETRY");
         direction = Math.random() < 0.5;
 
         startLengthIndex = Math.floor(Math.random() * maxBoatLengthIndex);
@@ -204,6 +343,17 @@ class Board extends Component<any, any> {
     })
   }
 
+  public getEmptyVisibleBoardIndexes() {
+    const indexes: Array<number> = [];
+
+    this.state.visibleBoard.forEach((element: { type: Item }, index: number) => {
+      if (element.type === "Empty")
+        indexes.push(index);
+    });
+
+    return indexes;
+  }
+
 
   // Show?
   public getRandomBoats(array: Array<any>) {
@@ -314,8 +464,23 @@ class Board extends Component<any, any> {
   }
 
 
-  // Lifecycle methods
-  public componentDidMount() {
+  // Init
+  public initBoard() {
+    const board = this.generateBoats();
+    const bottomRow = this.generateBottomRow(board);
+    const rightCol = this.generateRightCol(board);
+    const visibleBoard = this.generateVisibleBoard(board);
+
+    this.setState(() => ({
+      board,
+      visibleBoard,
+      originalVisibleBoard: visibleBoard,
+      bottomRow,
+      rightCol,
+    }));
+  }
+
+  public initEmptyBoard() {
     this.setState(() => ({
       visibleBoard: Array.from({length: sizeSquared}, () => ({})),
       bottomRow: Array.from({length: size}, () => ({number: 0})),
@@ -323,95 +488,29 @@ class Board extends Component<any, any> {
     }));
   }
 
-  public componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any) {
+
+  // Lifecycle methods
+  public componentDidMount() {
+    this.initEmptyBoard();
+  }
+
+  public componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
     if (prevProps.playing !== this.props.playing) {
       if (this.props.playing) {
-        const board = this.generateBoats();
-        const bottomRow = this.generateBottomRow(board);
-        const rightCol = this.generateRightCol(board);
-        const visibleBoard = this.generateVisibleBoard(board);
-
-        console.log(board);
-
-        this.setState(() => ({
-          board,
-          visibleBoard,
-          bottomRow,
-          rightCol,
-        }));
-      }
-    }
-  }
-
-
-  // Init
-  public generateVisibleBoard(board: Array<any>) {
-    const boats = this.getRandomBoats(board);
-    const waves = this.getRandomWaves(board);
-
-    const generatedBoard = Array.from({length: sizeSquared}, () => ({
-      type: "Empty",
-      locked: false,
-    }));
-
-    boats.forEach((item: any) => {
-      generatedBoard[item.index] = {
-        ...item,
-        type: "Boat",
-        locked: true,
-      };
-    });
-
-    waves.forEach(({index}: any) => {
-      generatedBoard[index] = {
-        type: "Wave",
-        locked: true,
-      };
-    });
-
-    return generatedBoard;
-  }
-
-
-  public isGameValid(visibleBoard: Array<any>): boolean {
-
-    const board = this.state.board;
-
-    for (let i = 0; i < sizeSquared; i++) {
-
-      const boardElement = board[i];
-      const visibleBoardElement = visibleBoard[i];
-
-      if (boardElement?.type !== visibleBoardElement?.type) {
-        return false;
+        this.initBoard();
       }
     }
 
-    return true;
-  }
+    if (prevProps.clearToggle !== this.props.clearToggle) {
+      this.onClear();
+    }
 
+    if (prevProps.resetToggle !== this.props.resetToggle) {
+      this.onReset();
+    }
 
-  // Listeners
-  public onTileClick = (index: number) => {
-    if (!this.props.playing)
-      return;
-
-    const updatedVisibleBoard = this.state.visibleBoard.map((e: any, i: number) => {
-      if (i === index) {
-        return {
-          ...e,
-          type: this.props.type,
-        }
-      }
-
-      return e;
-    });
-
-    this.setState(() => ({visibleBoard: updatedVisibleBoard}));
-
-    if (this.isGameValid(updatedVisibleBoard)) {
-      this.props.onWin();
-      return;
+    if (prevProps.tipToggle !== this.props.tipToggle) {
+      this.onTip();
     }
   }
 
