@@ -18,6 +18,8 @@
 
 /* Fireworks */
 .Firework {
+    overflow: hidden;
+
     position: absolute;
     width: 600px;
     height: 100%;
@@ -27,6 +29,35 @@
 }
 .Firework.Right {
     right: 0;
+}
+
+.Won {
+    position: absolute;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.Overlay {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.Won .Center {
+    position: relative;
+    top: -100px;
 }
 
 

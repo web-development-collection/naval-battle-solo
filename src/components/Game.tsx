@@ -60,6 +60,8 @@ class Game extends Component<any, State> {
   // Rendering
   public renderFireworks() {
     return <>
+      <div className="Overlay"/>
+
       <img
         className={"Firework"}
         src={fireworkSrc}
@@ -71,6 +73,13 @@ class Game extends Component<any, State> {
         src={fireworkSrc}
         alt={"Fireworks"}
       />
+
+      <div className={"Won"}>
+        <div className={"Center"}>
+          <h1>You won</h1>
+          <button className="Button" onClick={() => this.setState(() => ({won: false, playing: false}))}>Play again</button>
+        </div>
+      </div>
     </>;
   }
 
