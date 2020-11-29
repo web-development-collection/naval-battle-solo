@@ -1,4 +1,6 @@
 
+
+/* Select Options */
 .Select {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -14,22 +16,62 @@
 }
 
 
+/* Fireworks */
 .Firework {
+    overflow: hidden;
+
     position: absolute;
-    /*// border: "2px solid red";*/
     width: 600px;
     height: 100%;
     object-fit: contain;
     top: -110px;
     bottom: 0;
 }
-
 .Firework.Right {
     right: 0;
 }
 
+.Won {
+    position: absolute;
 
-.Play.Button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.Overlay {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.Won .Center {
+    position: relative;
+    top: -100px;
+}
+
+
+/* Buttons */
+.ButtonGroup {
+    display: flex;
+    justify-content: space-between;
+    width: fit-content;
+    margin: 0 auto;
+}
+.ButtonGroup .Button {
+    margin: 20px 4px;
+}
+.Button {
     padding: 8px 24px;
     border-radius: 8px;
     border: none;
@@ -46,13 +88,13 @@
 
     margin: 20px auto 0;
 }
-
 .Play.Button.Playing {
     background-color: #f3f3f3;
     color: #3e3e3e;
 }
 
 
+/* Board */
 .Board {
     width: fit-content;
     margin: 0 auto;
@@ -62,6 +104,7 @@
 }
 
 
+/* Tiles */
 .Tile {
     --size: 40px;
 
@@ -69,7 +112,6 @@
     height: var(--size);
     border-radius: 4px;
 }
-
 .Number.Tile {
     display: flex;
     align-items: center;
@@ -78,7 +120,6 @@
     background-color: #f1f1f1;
     font-weight: 600;
 }
-
 .Water.Tile {
     background-color: #d8ecff;
 
@@ -89,18 +130,18 @@
     cursor: pointer;
 }
 
+/* Wave */
 .Water.Tile .Wave {
     line-height: 40px;
     font-size: 18px;
 
     color: dodgerblue;
 }
-
 .Water.Tile .Wave.Lock {
     color: #00468f;
 }
 
-
+/* Wave */
 .Water.Tile .Boat {
     --size: 30px;
 
@@ -110,18 +151,16 @@
 
     background-color: #f3f320;
 }
-
 .Water.Tile .Boat.Lock {
     background-color: orange;
 }
 
-
+/* Options */
 .Water.Tile.SelectBox {
     background-color: #fff;
 
     transition: .2s ease all;
 }
-
 .Water.Tile.SelectBox.Selected {
     /*background-color: #cccccc;*/
     box-shadow: -1px 7px 16px -5px rgba(0,0,0,0.4);
